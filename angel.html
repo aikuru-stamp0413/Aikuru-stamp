@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>あいくる隊 天使育成</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ padding:25px 15px;
+ font-family:sans-serif;
+ background:linear-gradient(#e1f7ff,#fff5fc);
+ color:#718ba5;
+ text-align:center;
+ min-height:100vh;
+}
+.card{
+ max-width:440px;
+ margin:25px auto;
+ padding:28px 20px;
+ background:#ffffffdd;
+ border-radius:30px;
+ box-shadow:0 10px 30px #a5c9dc55;
+}
+h1{color:#79b7d8;font-size:25px}
+h2{font-size:20px}
+button{
+ background:#91cce9;
+ color:white;
+ border:0;
+ border-radius:25px;
+ padding:13px 22px;
+ margin:7px;
+ font-size:16px;
+ cursor:pointer;
+}
+button.selected{background:#718bbd}
+input,select{
+ padding:12px;
+ margin:8px;
+ border:2px solid #cce8f6;
+ border-radius:15px;
+ max-width:90%;
+}
+.avatar{font-size:90px;margin:25px}
+.bar{
+ background:#e2eef5;
+ border-radius:20px;
+ overflow:hidden;
+ height:20px;
+}
+#progress{
+ background:linear-gradient(90deg,#9cd8f5,#e6b8ed);
+ height:100%;
+ width:0%;
+ transition:.4s;
+}
+.hidden{display:none}
+.note{font-size:13px;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div class="card" id="create">
+ <div>☁️ 🪽 ☁️</div>
+ <h1>あいくる隊 天使育成</h1>
+ <p>自分だけの天使をお迎えしよう♡</p>
+
+ <h2>🍼 天使の種類</h2>
+ <button onclick="choose('human',this)">👼 人型</button>
+ <button onclick="choose('rabbit',this)">🐰 うさぎ</button>
+ <button onclick="choose('dog',this)">🐶 子犬</button>
+ <button onclick="choose('cat',this)">🐱 子猫</button>
+
+ <h2>🎀 天使のお名前</h2>
+ <input id="name" maxlength="20" placeholder="お名前を入力">
+
+ <h2>🎨 テーマカラー</h2>
+ <select id="color">
+  <option value="#91cce9">水色</option>
+  <option value="#e7b8dc">ピンク</option>
+  <option value="#b8a8e9">紫</option>
+  <option value="#e8c875">黄色</option>
+  <option value="#aaaaaa">グレー</option>
+ </select>
+
+ <br>
+ <button onclick="start()">🪽 天使をお迎えする</button>
+</div>
+
+<div class="card hidden" id="game">
+ <h1>🪽 あなたの天使 🪽</h1>
+ <div class="avatar" id="avatar"></div>
+ <h2 id="angelName"></h2>
+ <p id="stage"></p>
+ <p>✨ スタンプ <span id="count">0</span> 個</p>
+ <div class="bar"><div id="progress"></div></div>
+ <p id="next"></p>
+ <p class="note">ティアとの思い出を集めて成長しよう♡</p>
+ <p class="note">🍼 現在は育成画面のお試し版だよ！</p>
+ <button onclick="resetAngel()">天使を選び直す</button>
+</div>
+
+<script>
+let type="";
+let angel=null;
+
+function choose(t,btn){
+ type=t;
+ document.querySelectorAll("#create button")
+ .forEach(b=>b.classList.remove("selected"));
+ btn.classList.add("selected");
+}
+
+function start(){
+ const name=document.getElementById("name").value.trim();
+ if(!type){alert("天使の種類を選んでね！");return}
+ if(!name){alert("天使のお名前を入力してね！");return}
+
+ angel={
+  type:type,
+  name:name,
+  color:document.getElementById("color").value,
+  stamps:0
+ };
+ localStorage.setItem("myAngel",JSON.stringify(angel));
+ show();
+}
+
+function show(){
+ document.getElementById("create").classList.add("hidden");
+ document.getElementById("game").classList.remove("hidden");
+
+ const icons={
+  human:"👼",
+  rabbit:"🐰",
+  dog:"🐶",
+  cat:"🐱"
+ };
+ const stages=[
+  [0,"天使のたまご"],
+  [10,"ばぶ天使"],
+  [20,"見習い天使"],
+  [40,"一人前の天使"],
+  [70,"大天使"],
+  [100,"特別な守護天使"]
+ ];
+
+ let current=stages[0][1];
+ let next=100;
+
+ for(let i=0;i<stages.length;i++){
+  if(angel.stamps>=stages[i][0]){
+   current=stages[i][1];
+   next=stages[i+1]?.[0]??100;
+  }
+ }
+
+ document.getElementById("avatar").textContent=
+  angel.stamps===0?"🥚":icons[angel.type]+"🪽";
+ document.getElementById("angelName").textContent=angel.name;
+ document.getElementById("angelName").style.color=angel.color;
+ document.getElementById("stage").textContent="✨ "+current;
+ document.getElementById("count").textContent=angel.stamps;
+ document.getElementById("progress").style.width=
+  Math.min(100,angel.stamps/100*100)+"%";
+ document.getElementById("next").textContent=
+  angel.stamps>=100?"最高ランクに到達！":
+  "次の進化まであと "+(next-angel.stamps)+" 個";
+}
+
+function resetAngel(){
+ if(!confirm("天使を選び直す？"))return;
+ localStorage.removeItem("myAngel");
+ location.reload();
+}
+
+try{
+ const saved=JSON.parse(localStorage.getItem("myAngel"));
+ if(saved&&saved.name&&saved.type){
+  angel=saved;
+  show();
+ }
+}catch(e){}
+</script>
+</body>
+</html>
