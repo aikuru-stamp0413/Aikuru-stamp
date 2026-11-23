@@ -204,7 +204,7 @@ document.getElementById("googleLoginBtn")
       alert("ログインできたよ！🪽");
     } catch (error) {
       console.error(error);
-      alert("ログインできなかったよ。もう一度試してね！");
+      alert("エラーコード:" + error.code + "\n" + error.message);
     }
   });
 </script>
