@@ -200,6 +200,7 @@ const googleProvider = new GoogleAuthProvider();
 document.getElementById("googleLoginBtn")
   .addEventListener("click", async () => {
     try {
+      alert("ボタンが押されたよ!")
       const result = await signInWithPopup(auth, googleProvider);
       alert("ログインできたよ！🪽");
     } catch (error) {
