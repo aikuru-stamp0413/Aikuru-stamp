@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あいくる隊スタンプ帳</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Hiragino Maru Gothic ProN",
+                   "Yu Gothic", sans-serif;
+      background: linear-gradient(
+        180deg,
+        #dff5ff 0%,
+        #f5fbff 55%,
+        #fff9e9 100%
+      );
+      color: #718ba5;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      padding: 55px 20px;
+    }
+
+    .stars {
+      font-size: 28px;
+      color: #f4d889;
+      letter-spacing: 12px;
+    }
+
+    .cloud {
+      font-size: 65px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.88);
+      border: 3px solid white;
+      border-radius: 35px;
+      padding: 35px 20px;
+      box-shadow: 0 10px 30px #b7d9ed66;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: #a2b7c9;
+    }
+
+    h1 {
+      font-size: 27px;
+      color: #80b9dd;
+      line-height: 1.6;
+    }
+
+    .welcome {
+      font-size: 21px;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+
+    .message {
+      font-size: 14px;
+      line-height: 2.2;
+      margin: 20px 0 35px;
+    }
+
+    button {
+      width: 100%;
+      max-width: 290px;
+      padding: 17px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(
+        90deg,
+        #a8dcf6,
+        #c5eaff
+      );
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      box-shadow: 0 5px 12px #b5dcef;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .footer {
+      margin-top: 35px;
+      font-size: 12px;
+      color: #a4b9c8;
+    }
+
+    .ribbon {
+      font-size: 25px;
+      margin-top: 25px;
+    }
+
+    .notice {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #90a9bc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <div class="stars">✦ ✧ ✦</div>
+
+    <div class="cloud">☁️🪽☁️</div>
+
+    <div class="card">
+
+      <div class="subtitle">
+        ANGEL BABY STAMP BOOK
+      </div>
+
+      <h1>
+        🪽 あいくる隊<br>
+        スタンプ帳 🍼
+      </h1>
+
+      <div class="ribbon">🎀 ✨ 🎀</div>
+
+      <div class="welcome">
+        おかえりなさいっ！
+      </div>
+
+      <p class="message">
+        ティアのところに<br>
+        帰ってきてくれてありがとう♡<br><br>
+
+        いっしょに過ごした思い出を<br>
+        スタンプにして集めようね！<br><br>
+
+        いっぱい集めてくれたら<br>
+        ティア、とってもうれしいなっ！
+      </p>
+
+      <button onclick="openStampBook()">
+        🪽 スタンプ帳をひらく
+      </button>
+
+      <p class="notice" id="notice"></p>
+
+    </div>
+
+    <div class="footer">
+      ☁️ あいくる隊 × ティア ☁️
+      <br><br>
+      Made with Love ♡
+    </div>
+
+  </main>
+
+  <script>
+    function openStampBook() {
+      document.getElementById("notice").textContent =
+        "🍼 スタンプ帳はただいま準備中だよ！";
+    }
+  </script>
+
+</body>
+</html>
