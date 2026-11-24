@@ -1,70 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>あいくる隊スタンプ帳</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Hiragino Maru Gothic ProN",
+               "Yu Gothic", sans-serif;
+  background: linear-gradient(
+    180deg,
+    #dff5ff 0%,
+    #f5fbff 55%,
+    #fff9e9 100%
+  );
+  color: #718ba5;
+  text-align: center;
+}
+
+.container {
+  max-width: 480px;
+  margin: auto;
+  padding: 35px 18px;
+}
+
+.stars {
+  font-size: 25px;
+  color: #f4d889;
+  letter-spacing: 10px;
+  margin-bottom: 15px;
+}
+
+.cloud {
+  font-size: 55px;
+  margin: 15px 0;
+}
+
+.card {
+  background: rgba(255,255,255,0.92);
+  border: 3px solid white;
+  border-radius: 30px;
+  padding: 28px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px #b7d9ed66;
+}
+
+.subtitle {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #a2b7c9;
+}
+
+h1 {
+  font-size: 26px;
+  color: #80b9dd;
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: 20px;
+  color: #80b9dd;
+}
+
+.welcome {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 25px;
+}
+
+.message {
+  font-size: 14px;
+  line-height: 2;
+  margin: 20px 0;
+}
+
+button {
+  width: 100%;
+  max-width: 290px;
+  padding: 15px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(
+    90deg,
+    #a8dcf6,
+    #c5eaff
+  );
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 8px auto;
+  cursor: pointer;
+  box-shadow: 0 5px 12px #b5dcef;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.logout {
+  background: #c5d3df;
+}
+
+.admin-button {
+  background: linear-gradient(
+    90deg,
+    #f3c5d9,
+    #f8d9e8
+  );
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #d9edfa;
+  border-radius: 15px;
+  margin: 10px 0;
+  font-size: 14px;
+  outline: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.profile-icon {
+  font-size: 55px;
+  margin: 10px;
+}
+
+.stamp-count {
+  font-size: 40px;
+  color: #80b9dd;
+  font-weight: bold;
+  margin: 15px;
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stamp {
+  aspect-ratio: 1;
+  border-radius: 20px;
+  background: #edf4f8;
+  border: 2px dashed #cbdce8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+
+.stamp.filled {
+  background: #e2f5ff;
+  border: 2px solid #b3e0f5;
+}
+
+.history-item {
+  background: #f3faff;
+  border-radius: 15px;
+  padding: 13px;
+  margin: 10px 0;
+  text-align: left;
+  font-size: 13px;
+}
+
+.notice {
+  font-size: 13px;
+  color: #90a9bc;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.footer {
+  margin-top: 25px;
+  font-size: 12px;
+  color: #a4b9c8;
+}
+
+.small {
+  font-size: 11px;
+  color: #a4b9c8;
+  word-break: break-all;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #e5f0f7;
+  margin: 20px 0;
+}
+
+.admin-user {
+  background: #fff5fa;
+  border-radius: 15px;
+  padding: 12px;
+  margin: 10px 0;
+  text-align: left;
+  font-size: 12px;
+  word-break: break-all;
+}
+</style>
+</head>
+
+<body>
+
+<main class="container">
+
+<div class="stars">✦ ✧ ✦</div>
+<div class="cloud">☁️🪽☁️</div>
+
+<!-- ログイン画面 -->
+
+<section id="loginPage">
+
+<div class="card">
+
+<div class="subtitle">
+ANGEL BABY STAMP BOOK
+</div>
+
+<h1>
+🪽 あいくる隊<br>
+スタンプ帳 🍼
+</h1>
+
+<div style="font-size:25px;margin:20px;">
+🎀 ✨ 🎀
+</div>
+
+<div class="welcome">
+おかえりなさいっ！
+</div>
+
+<p class="message">
+ティアのところに<br>
+帰ってきてくれてありがとう♡<br><br>
+
+いっしょに過ごした思い出を<br>
+スタンプにして集めようね！<br><br>
+
+いっぱい集めてくれたら<br>
+ティア、とってもうれしいなっ！
+</p>
+
+<button id="googleLoginBtn">
+🪽 Googleでログイン
+</button>
+
+<p id="loginNotice" class="notice"></p>
+
+</div>
+</section>
+
+
+<!-- マイページ -->
+
+<section id="homePage" class="hidden">
+
+<div class="card">
+
+<div class="subtitle">MY PAGE</div>
+
+<div class="profile-icon">👼🏻</div>
+
+<h2 id="userName">こんにちは！</h2>
+
+<p id="userEmail" class="small"></p>
+
+<hr>
+
+<div class="welcome">
+あなたのスタンプ数
+</div>
+
+<div class="stamp-count">
+<span id="stampCount">0</span>
+<span style="font-size:18px;">個</span>
+</div>
+
+<p class="notice">
+ティアとの思い出が増えていくね♡
+</p>
+
+<button id="stampPageBtn">
+🎀 スタンプ帳を見る
+</button>
+
+<button id="historyPageBtn">
+📖 獲得履歴を見る
+</button>
+
+<div id="adminButtonArea" class="hidden">
+<button id="adminPageBtn" class="admin-button">
+👑 管理者ページ
+</button>
+</div>
+
+<button id="logoutBtn" class="logout">
+ログアウト
+</button>
+
+</div>
+
+</section>
+
+
+<!-- スタンプ帳 -->
+
+<section id="stampPage" class="hidden">
+
+<div class="card">
+
+<div class="subtitle">MY STAMP BOOK</div>
+
+<h1>🪽 スタンプ帳 🍼</h1>
+
+<div class="stamp-count">
+<span id="stampCount2">0</span> 個
+</div>
+
+<div id="stampGrid" class="stamp-grid"></div>
+
+<p class="notice">
+ティアとの思い出を<br>
+いっぱい集めてね♡
+</p>
+
+<button class="backHomeBtn">
+🏠 マイページに戻る
+</button>
+
+</div>
+
+</section>
+
+
+<!-- 履歴 -->
+
+<section id="historyPage" class="hidden">
+
+<div class="card">
+
+<div class="subtitle">STAMP HISTORY</div>
+
+<h1>📖 獲得履歴</h1>
+
+<div id="historyList">
+読み込み中...
+</div>
+
+<button class="backHomeBtn">
+🏠 マイページに戻る
+</button>
+
+</div>
+
+</section>
+
+
+<!-- 管理者ページ -->
+
+<section id="adminPage" class="hidden">
+
+<div class="card">
+
+<div class="subtitle">ADMINISTRATOR</div>
+
+<h1>👑 管理者ページ</h1>
+
+<p class="message">
+あいくる隊のみんなに<br>
+スタンプをプレゼントしよう♡
+</p>
+
+<hr>
+
+<h2>スタンプ付与</h2>
+
+<p class="notice">
+付与する相手のUIDを入力してね。
+</p>
+
+<input
+  type="text"
+  id="targetUID"
+  placeholder="ユーザーUID"
+/>
+
+<input
+  type="text"
+  id="stampReason"
+  placeholder="付与理由（例：配信参加記念）"
+/>
+
+<button id="giveStampBtn" class="admin-button">
+🎁 スタンプを1個プレゼント
+</button>
+
+<p id="adminNotice" class="notice"></p>
+
+<hr>
+
+<h2>メンバー一覧</h2>
+
+<button id="reloadUsersBtn" class="admin-button">
+🔄 メンバー一覧を更新
+</button>
+
+<div id="userList">
+読み込み中...
+</div>
+
+<button class="backHomeBtn">
+🏠 マイページに戻る
+</button>
+
+</div>
+
+</section>
+
+
+<div class="footer">
+☁️ あいくる隊 × ティア ☁️
+<br><br>
+Made with Love ♡
+</div>
+
+</main>
+
+
 <script type="module">
-  // Firebaseの読み込み
-  import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup
-  } from
-    "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+// ==================================
+// Firebase読み込み
+// ==================================
 
-  // Firebase設定
-  const firebaseConfig = {
-    apiKey: "AIzaSyCm2JzJrmu3SKUw4p9bHWAVHpeo7Cmf6IQ",
-    authDomain: "aikuru-stamp.firebaseapp.com",
-    projectId: "aikuru-stamp",
-    storageBucket: "aikuru-stamp.firebasestorage.app",
-    messagingSenderId: "618961381186",
-    appId: "1:618961381186:web:da20f4db71f165f7be8adb",
-    measurementId: "G-MW4LM9P5TB"
-  };
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
-  // Firebase初期化
-  const app = initializeApp(firebaseConfig);
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
-  // Authentication初期化
-  const auth = getAuth(app);
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  serverTimestamp,
+  runTransaction
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-  // Googleログイン設定
-  const googleProvider = new GoogleAuthProvider();
 
-  // ログインボタン
-  document.getElementById("googleLoginBtn")
-    .addEventListener("click", async () => {
+// ==================================
+// Firebase設定
+// ==================================
 
-      const notice = document.getElementById("notice");
+const firebaseConfig = {
+  apiKey: "AIzaSyCm2JzJrmu3SKUw4p9bHWAVHpeo7Cmf6IQ",
+  authDomain: "aikuru-stamp.firebaseapp.com",
+  projectId: "aikuru-stamp",
+  storageBucket: "aikuru-stamp.firebasestorage.app",
+  messagingSenderId: "618961381186",
+  appId: "1:618961381186:web:da20f4db71f165f7be8adb",
+  measurementId: "G-MW4LM9P5TB"
+};
 
-      try {
-        notice.textContent = "ログイン中だよ...🪽";
 
-        const result = await signInWithPopup(
-          auth,
-          googleProvider
-        );
+// ==================================
+// 初期化
+// ==================================
 
-        const user = result.user;
+const app = initializeApp(firebaseConfig);
 
-        alert("ログインできたよ！🪽");
+const auth = getAuth(app);
 
-        notice.textContent =
-          user.displayName + " でログイン中♡";
+const db = getFirestore(app);
 
-        console.log("ログイン成功！");
-        console.log(user);
+const googleProvider = new GoogleAuthProvider();
 
-      } catch (error) {
 
-        console.error("ログインエラー:", error);
+// ==================================
+// 管理者設定
+// ==================================
 
-        notice.textContent =
-          "ログインできなかったよ…";
+// 最初は空欄。
+// 自分のUIDを確認してから設定する。
 
-        alert(
-          "エラーコード: " + error.code +
-          "\n" + error.message
-        );
-      }
+const ADMIN_UIDS = [
+  "ここに管理者のUIDを入力"
+];
+
+
+// ==================================
+// ページ切り替え
+// ==================================
+
+const pages = [
+  "loginPage",
+  "homePage",
+  "stampPage",
+  "historyPage",
+  "adminPage"
+];
+
+function showPage(pageId) {
+
+  pages.forEach(id => {
+    document.getElementById(id)
+      .classList.add("hidden");
+  });
+
+  document.getElementById(pageId)
+    .classList.remove("hidden");
+
+  window.scrollTo(0, 0);
+}
+
+
+// ==================================
+// 現在のユーザー
+// ==================================
+
+let currentUser = null;
+let currentProfile = null;
+
+
+// ==================================
+// ユーザー情報取得
+// ==================================
+
+async function loadUserProfile(user) {
+
+  const userRef = doc(db, "users", user.uid);
+
+  const snapshot = await getDoc(userRef);
+
+  if (!snapshot.exists()) {
+
+    const profile = {
+      displayName: user.displayName || "あいくる隊",
+      email: user.email || "",
+      stampCount: 0,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(userRef, profile);
+
+    currentProfile = {
+      displayName: profile.displayName,
+      email: profile.email,
+      stampCount: 0
+    };
+
+  } else {
+
+    currentProfile = snapshot.data();
+
+  }
+
+  document.getElementById("userName").textContent =
+    currentProfile.displayName + " さん";
+
+  document.getElementById("userEmail").textContent =
+    currentProfile.email;
+
+  updateStampCount(currentProfile.stampCount || 0);
+
+  // 管理者判定
+  const isAdmin = ADMIN_UIDS.includes(user.uid);
+
+  document.getElementById("adminButtonArea")
+    .classList.toggle("hidden", !isAdmin);
+
+}
+
+
+// ==================================
+// スタンプ数更新
+// ==================================
+
+function updateStampCount(count) {
+
+  document.getElementById("stampCount").textContent = count;
+
+  document.getElementById("stampCount2").textContent = count;
+
+}
+
+
+// ==================================
+// Googleログイン
+// ==================================
+
+document.getElementById("googleLoginBtn")
+.addEventListener("click", async () => {
+
+  const notice = document.getElementById("loginNotice");
+
+  try {
+
+    notice.textContent = "ログイン中だよ...🪽";
+
+    await signInWithPopup(auth, googleProvider);
+
+  } catch (error) {
+
+    console.error(error);
+
+    notice.textContent =
+      "ログインできなかったよ。\n" + error.message;
+
+  }
+
+});
+
+
+// ==================================
+// ログイン状態確認
+// ==================================
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (user) {
+
+    currentUser = user;
+
+    try {
+
+      await loadUserProfile(user);
+
+      showPage("homePage");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("ユーザー情報を読み込めませんでした。\n" + error.message);
+
+    }
+
+  } else {
+
+    currentUser = null;
+    currentProfile = null;
+
+    showPage("loginPage");
+
+  }
+
+});
+
+
+// ==================================
+// ログアウト
+// ==================================
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
+
+  if (!confirm("ログアウトする？")) return;
+
+  try {
+
+    await signOut(auth);
+
+  } catch (error) {
+
+    alert(error.message);
+
+  }
+
+});
+
+
+// ==================================
+// マイページから各ページへ
+// ==================================
+
+document.getElementById("stampPageBtn")
+.addEventListener("click", async () => {
+
+  await loadStampPage();
+
+  showPage("stampPage");
+
+});
+
+
+document.getElementById("historyPageBtn")
+.addEventListener("click", async () => {
+
+  await loadHistory();
+
+  showPage("historyPage");
+
+});
+
+
+document.getElementById("adminPageBtn")
+.addEventListener("click", async () => {
+
+  if (!isAdmin()) return;
+
+  await loadUsers();
+
+  showPage("adminPage");
+
+});
+
+
+// ==================================
+// 戻るボタン
+// ==================================
+
+document.querySelectorAll(".backHomeBtn")
+.forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    showPage("homePage");
+
+  });
+
+});
+
+
+// ==================================
+// 管理者判定
+// ==================================
+
+function isAdmin() {
+
+  return currentUser &&
+    ADMIN_UIDS.includes(currentUser.uid);
+
+}
+
+
+// ==================================
+// スタンプ帳表示
+// ==================================
+
+async function loadStampPage() {
+
+  const userRef = doc(db, "users", currentUser.uid);
+
+  const snapshot = await getDoc(userRef);
+
+  if (!snapshot.exists()) return;
+
+  const count = snapshot.data().stampCount || 0;
+
+  updateStampCount(count);
+
+  const grid = document.getElementById("stampGrid");
+
+  grid.innerHTML = "";
+
+  // 最低20個のマスを表示
+  const totalSlots = Math.max(20, count);
+
+  for (let i = 0; i < totalSlots; i++) {
+
+    const stamp = document.createElement("div");
+
+    stamp.className = "stamp";
+
+    if (i < count) {
+
+      stamp.classList.add("filled");
+
+      stamp.textContent = "🪽";
+
+    } else {
+
+      stamp.textContent = "♡";
+
+    }
+
+    grid.appendChild(stamp);
+
+  }
+
+}
+
+
+// ==================================
+// 履歴表示
+// ==================================
+
+async function loadHistory() {
+
+  const list = document.getElementById("historyList");
+
+  list.textContent = "読み込み中...";
+
+  try {
+
+    const historyRef = collection(
+      db,
+      "users",
+      currentUser.uid,
+      "history"
+    );
+
+    const historyQuery = query(
+      historyRef,
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(historyQuery);
+
+    list.innerHTML = "";
+
+    if (snapshot.empty) {
+
+      list.textContent =
+        "まだスタンプの履歴がないよ♡";
+
+      return;
+
+    }
+
+    snapshot.forEach(item => {
+
+      const data = item.data();
+
+      const date = data.createdAt?.toDate
+        ? data.createdAt.toDate().toLocaleString("ja-JP")
+        : "日時取得中...";
+
+      const div = document.createElement("div");
+
+      div.className = "history-item";
+
+      const title = document.createElement("strong");
+      title.textContent = "🪽 スタンプ獲得！";
+
+      const dateText = document.createElement("div");
+      dateText.textContent = date;
+
+      const reason = document.createElement("div");
+      reason.textContent = "理由：" + (data.reason || "プレゼント♡");
+
+      div.append(title, dateText, reason);
+
+      list.appendChild(div);
+
     });
+
+  } catch (error) {
+
+    console.error(error);
+
+    list.textContent =
+      "履歴の読み込みに失敗しました。\n" + error.message;
+
+  }
+
+}
+
+
+// ==================================
+// 管理者：スタンプ付与
+// ==================================
+
+document.getElementById("giveStampBtn")
+.addEventListener("click", async () => {
+
+  const notice = document.getElementById("adminNotice");
+
+  if (!isAdmin()) {
+
+    notice.textContent = "管理者のみ操作できます。";
+
+    return;
+
+  }
+
+  const targetUID =
+    document.getElementById("targetUID").value.trim();
+
+  const reason =
+    document.getElementById("stampReason").value.trim();
+
+  if (!targetUID) {
+
+    notice.textContent = "UIDを入力してね！";
+
+    return;
+
+  }
+
+  if (!reason) {
+
+    notice.textContent = "付与理由を入力してね！";
+
+    return;
+
+  }
+
+  if (!confirm("このユーザーにスタンプを1個付与する？")) {
+    return;
+  }
+
+  try {
+
+    notice.textContent = "スタンプを付与中...";
+
+    const userRef = doc(db, "users", targetUID);
+
+    const historyRef = collection(
+      db,
+      "users",
+      targetUID,
+      "history"
+    );
+
+    await runTransaction(db, async (transaction) => {
+
+      const userSnapshot = await transaction.get(userRef);
+
+      if (!userSnapshot.exists()) {
+        throw new Error("ユーザーが見つかりません。");
+      }
+
+      const oldCount = userSnapshot.data().stampCount || 0;
+
+      transaction.update(userRef, {
+        stampCount: oldCount + 1,
+        updatedAt: serverTimestamp()
+      });
+
+      const newHistoryRef = doc(historyRef);
+
+      transaction.set(newHistoryRef, {
+        reason: reason,
+        createdAt: serverTimestamp(),
+        grantedBy: currentUser.uid
+      });
+
+    });
+
+    notice.textContent =
+      "🎉 スタンプをプレゼントしたよ！";
+
+    document.getElementById("targetUID").value = "";
+    document.getElementById("stampReason").value = "";
+
+    await loadUsers();
+
+  } catch (error) {
+
+    console.error(error);
+
+    notice.textContent =
+      "エラーが発生しました。\n" + error.message;
+
+  }
+
+});
+
+
+// ==================================
+// 管理者：メンバー一覧
+// ==================================
+
+async function loadUsers() {
+
+  if (!isAdmin()) return;
+
+  const list = document.getElementById("userList");
+
+  list.textContent = "読み込み中...";
+
+  try {
+
+    const usersRef = collection(db, "users");
+
+    const snapshot = await getDocs(usersRef);
+
+    list.innerHTML = "";
+
+    if (snapshot.empty) {
+
+      list.textContent = "メンバーがいません。";
+
+      return;
+
+    }
+
+    const users = [];
+
+    snapshot.forEach(item => {
+
+      users.push({
+        uid: item.id,
+        ...item.data()
+      });
+
+    });
+
+    users.sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() || 0;
+      const bTime = b.createdAt?.toMillis?.() || 0;
+      return bTime - aTime;
+    });
+
+    users.forEach(user => {
+
+      const div = document.createElement("div");
+
+      div.className = "admin-user";
+
+      const name = document.createElement("strong");
+      name.textContent = "👼 " + (user.displayName || "メンバー");
+
+      const count = document.createElement("div");
+      count.textContent = "スタンプ：" + (user.stampCount || 0) + "個";
+
+      const uid = document.createElement("div");
+      uid.className = "small";
+      uid.textContent = "UID：" + user.uid;
+
+      const selectButton = document.createElement("button");
+      selectButton.className = "admin-button";
+      selectButton.textContent = "このメンバーに付与";
+
+      selectButton.addEventListener("click", () => {
+
+        document.getElementById("targetUID").value = user.uid;
+
+        document.getElementById("stampReason").focus();
+
+        window.scrollTo(0, 0);
+
+      });
+
+      div.append(name, count, uid, selectButton);
+
+      list.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    list.textContent =
+      "メンバー一覧を取得できませんでした。\n" + error.message;
+
+  }
+
+}
+
+
+// ==================================
+// メンバー一覧更新
+// ==================================
+
+document.getElementById("reloadUsersBtn")
+.addEventListener("click", loadUsers);
+
+
 </script>
+
+</body>
+</html>
