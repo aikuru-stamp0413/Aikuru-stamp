@@ -209,6 +209,16 @@ hr {
   font-size: 12px;
   word-break: break-all;
 }
+
+.selected-member {
+  background: #eef9ff;
+  border: 2px solid #b9e2f7;
+  border-radius: 16px;
+  padding: 13px;
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
 </style>
 </head>
 
@@ -388,13 +398,16 @@ ANGEL BABY STAMP BOOK
 <h2>スタンプ付与</h2>
 
 <p class="notice">
-付与する相手のUIDを入力してね。
+下のメンバー一覧から、スタンプを贈る相手を選んでね♡
 </p>
 
+<div id="selectedMember" class="selected-member">
+まだメンバーが選ばれていないよ。
+</div>
+
 <input
-  type="text"
+  type="hidden"
   id="targetUID"
-  placeholder="ユーザーUID"
 />
 
 <input
@@ -412,6 +425,12 @@ ANGEL BABY STAMP BOOK
 <hr>
 
 <h2>メンバー一覧</h2>
+
+<input
+  type="search"
+  id="memberSearch"
+  placeholder="🔎 名前・メールアドレスで検索"
+/>
 
 <button id="reloadUsersBtn" class="admin-button">
 🔄 メンバー一覧を更新
@@ -463,7 +482,6 @@ import {
   getDoc,
   setDoc,
   collection,
-  addDoc,
   getDocs,
   query,
   orderBy,
@@ -505,11 +523,8 @@ const googleProvider = new GoogleAuthProvider();
 // 管理者設定
 // ==================================
 
-// 最初は空欄。
-// 自分のUIDを確認してから設定する。
-
 const ADMIN_UIDS = [
-  "8YgVF7QhRThZ2N9CuaUTUoOZaeh1"
+  "ここに管理者のUIDを入力"
 ];
 
 
@@ -589,7 +604,6 @@ async function loadUserProfile(user) {
 
   updateStampCount(currentProfile.stampCount || 0);
 
-  // 管理者判定
   const isAdmin = ADMIN_UIDS.includes(user.uid);
 
   document.getElementById("adminButtonArea")
@@ -780,7 +794,6 @@ async function loadStampPage() {
 
   grid.innerHTML = "";
 
-  // 最低20個のマスを表示
   const totalSlots = Math.max(20, count);
 
   for (let i = 0; i < totalSlots; i++) {
@@ -909,7 +922,7 @@ document.getElementById("giveStampBtn")
 
   if (!targetUID) {
 
-    notice.textContent = "UIDを入力してね！";
+    notice.textContent = "先にメンバー一覧から相手を選んでね！";
 
     return;
 
@@ -971,6 +984,9 @@ document.getElementById("giveStampBtn")
     document.getElementById("targetUID").value = "";
     document.getElementById("stampReason").value = "";
 
+    document.getElementById("selectedMember").textContent =
+      "まだメンバーが選ばれていないよ。";
+
     await loadUsers();
 
   } catch (error) {
@@ -989,6 +1005,8 @@ document.getElementById("giveStampBtn")
 // 管理者：メンバー一覧
 // ==================================
 
+let cachedUsers = [];
+
 async function loadUsers() {
 
   if (!isAdmin()) return;
@@ -1000,71 +1018,29 @@ async function loadUsers() {
   try {
 
     const usersRef = collection(db, "users");
-
     const snapshot = await getDocs(usersRef);
 
-    list.innerHTML = "";
-
-    if (snapshot.empty) {
-
-      list.textContent = "メンバーがいません。";
-
-      return;
-
-    }
-
-    const users = [];
+    cachedUsers = [];
 
     snapshot.forEach(item => {
 
-      users.push({
+      cachedUsers.push({
         uid: item.id,
         ...item.data()
       });
 
     });
 
-    users.sort((a, b) => {
+    cachedUsers.sort((a, b) => {
+
       const aTime = a.createdAt?.toMillis?.() || 0;
       const bTime = b.createdAt?.toMillis?.() || 0;
+
       return bTime - aTime;
-    });
-
-    users.forEach(user => {
-
-      const div = document.createElement("div");
-
-      div.className = "admin-user";
-
-      const name = document.createElement("strong");
-      name.textContent = "👼 " + (user.displayName || "メンバー");
-
-      const count = document.createElement("div");
-      count.textContent = "スタンプ：" + (user.stampCount || 0) + "個";
-
-      const uid = document.createElement("div");
-      uid.className = "small";
-      uid.textContent = "UID：" + user.uid;
-
-      const selectButton = document.createElement("button");
-      selectButton.className = "admin-button";
-      selectButton.textContent = "このメンバーに付与";
-
-      selectButton.addEventListener("click", () => {
-
-        document.getElementById("targetUID").value = user.uid;
-
-        document.getElementById("stampReason").focus();
-
-        window.scrollTo(0, 0);
-
-      });
-
-      div.append(name, count, uid, selectButton);
-
-      list.appendChild(div);
 
     });
+
+    renderUsers();
 
   } catch (error) {
 
@@ -1076,6 +1052,110 @@ async function loadUsers() {
   }
 
 }
+
+
+// ==================================
+// メンバー一覧の表示・検索
+// ==================================
+
+function renderUsers() {
+
+  const list = document.getElementById("userList");
+
+  const searchText = (
+    document.getElementById("memberSearch").value || ""
+  ).trim().toLowerCase();
+
+  const filteredUsers = cachedUsers.filter(user => {
+
+    const name = (user.displayName || "").toLowerCase();
+    const email = (user.email || "").toLowerCase();
+
+    return name.includes(searchText) ||
+           email.includes(searchText);
+
+  });
+
+  list.innerHTML = "";
+
+  if (filteredUsers.length === 0) {
+
+    list.textContent = cachedUsers.length === 0
+      ? "まだメンバーがいません。"
+      : "検索に一致するメンバーがいません。";
+
+    return;
+
+  }
+
+  filteredUsers.forEach(user => {
+
+    const div = document.createElement("div");
+
+    div.className = "admin-user";
+
+    const name = document.createElement("strong");
+
+    name.textContent =
+      "👼 " + (user.displayName || "メンバー");
+
+    const email = document.createElement("div");
+
+    email.textContent =
+      user.email || "メールアドレス未登録";
+
+    const count = document.createElement("div");
+
+    count.textContent =
+      "スタンプ：" + (user.stampCount || 0) + "個";
+
+    const selectButton = document.createElement("button");
+
+    selectButton.className = "admin-button";
+
+    selectButton.textContent =
+      "🎀 このメンバーを選ぶ";
+
+    selectButton.addEventListener("click", () => {
+
+      document.getElementById("targetUID").value =
+        user.uid;
+
+      document.getElementById("selectedMember").textContent =
+        "選択中： " +
+        (user.displayName || "メンバー") +
+        " さん（現在 " +
+        (user.stampCount || 0) +
+        " 個）";
+
+      document.getElementById("stampReason").focus();
+
+      document.getElementById("adminNotice").textContent =
+        "付与理由を入力して、スタンプをプレゼントしてね♡";
+
+      document.getElementById("selectedMember")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+    });
+
+    div.append(name, email, count, selectButton);
+
+    list.appendChild(div);
+
+  });
+
+}
+
+
+// ==================================
+// 検索機能
+// ==================================
+
+document.getElementById("memberSearch")
+.addEventListener("input", renderUsers);
 
 
 // ==================================
