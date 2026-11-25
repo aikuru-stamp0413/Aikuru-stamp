@@ -209,6 +209,11 @@ hr {
   font-size: 12px;
   word-break: break-all;
 }
+
+.grant-revoked {
+  opacity: 0.7;
+  border: 1px solid #e7cbd5;
+}
 </style>
 </head>
 
@@ -418,6 +423,22 @@ ANGEL BABY STAMP BOOK
 </button>
 
 <div id="userList">
+読み込み中...
+</div>
+
+<hr>
+
+<h2>スタンプ付与履歴</h2>
+
+<p class="notice">
+付与したスタンプの確認・取り消しができるよ。
+</p>
+
+<button id="reloadGrantHistoryBtn" class="admin-button">
+🔄 付与履歴を更新
+</button>
+
+<div id="grantHistoryList">
 読み込み中...
 </div>
 
@@ -725,6 +746,7 @@ document.getElementById("adminPageBtn")
   if (!isAdmin()) return;
 
   await loadUsers();
+  await loadGrantHistory();
 
   showPage("adminPage");
 
@@ -865,6 +887,11 @@ async function loadHistory() {
       const reason = document.createElement("div");
       reason.textContent = "理由：" + (data.reason || "プレゼント♡");
 
+      if (data.status === "revoked") {
+        title.textContent = "↩️ スタンプ取り消し済み";
+        div.classList.add("grant-revoked");
+      }
+
       div.append(title, dateText, reason);
 
       list.appendChild(div);
@@ -939,6 +966,10 @@ document.getElementById("giveStampBtn")
       "history"
     );
 
+    // 全体履歴用のIDと個人履歴用のIDを先に作成
+    const newGrantRef = doc(collection(db, "stampGrants"));
+    const newHistoryRef = doc(historyRef);
+
     await runTransaction(db, async (transaction) => {
 
       const userSnapshot = await transaction.get(userRef);
@@ -947,19 +978,33 @@ document.getElementById("giveStampBtn")
         throw new Error("ユーザーが見つかりません。");
       }
 
-      const oldCount = userSnapshot.data().stampCount || 0;
+      const userData = userSnapshot.data();
+      const oldCount = userData.stampCount || 0;
+      const targetName = userData.displayName || "メンバー";
 
       transaction.update(userRef, {
         stampCount: oldCount + 1,
         updatedAt: serverTimestamp()
       });
 
-      const newHistoryRef = doc(historyRef);
-
+      // 本人の獲得履歴
       transaction.set(newHistoryRef, {
         reason: reason,
         createdAt: serverTimestamp(),
-        grantedBy: currentUser.uid
+        grantedBy: currentUser.uid,
+        grantId: newGrantRef.id,
+        status: "active"
+      });
+
+      // 管理者用の全体付与履歴
+      transaction.set(newGrantRef, {
+        targetUID: targetUID,
+        targetName: targetName,
+        reason: reason,
+        createdAt: serverTimestamp(),
+        grantedBy: currentUser.uid,
+        historyId: newHistoryRef.id,
+        status: "active"
       });
 
     });
@@ -971,6 +1016,7 @@ document.getElementById("giveStampBtn")
     document.getElementById("stampReason").value = "";
 
     await loadUsers();
+    await loadGrantHistory();
 
   } catch (error) {
 
@@ -982,6 +1028,212 @@ document.getElementById("giveStampBtn")
   }
 
 });
+
+
+// ==================================
+// 管理者：スタンプ付与履歴
+// ==================================
+
+async function loadGrantHistory() {
+
+  if (!isAdmin()) return;
+
+  const list = document.getElementById("grantHistoryList");
+  list.textContent = "読み込み中...";
+
+  try {
+
+    const grantsRef = collection(db, "stampGrants");
+    const grantsQuery = query(
+      grantsRef,
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(grantsQuery);
+
+    list.innerHTML = "";
+
+    if (snapshot.empty) {
+      list.textContent = "まだ付与履歴がないよ♡";
+      return;
+    }
+
+    snapshot.forEach(item => {
+
+      const data = item.data();
+      const div = document.createElement("div");
+      div.className = "admin-user";
+
+      if (data.status === "revoked") {
+        div.classList.add("grant-revoked");
+      }
+
+      const name = document.createElement("strong");
+      name.textContent = "🎁 " + (data.targetName || "メンバー");
+
+      const date = document.createElement("div");
+      date.textContent = data.createdAt?.toDate
+        ? "付与日時：" + data.createdAt.toDate().toLocaleString("ja-JP")
+        : "付与日時：取得中...";
+
+      const reason = document.createElement("div");
+      reason.textContent = "理由：" + (data.reason || "記載なし");
+
+      const uid = document.createElement("div");
+      uid.className = "small";
+      uid.textContent = "UID：" + (data.targetUID || "");
+
+      const giver = document.createElement("div");
+      giver.className = "small";
+      giver.textContent = "付与者UID：" + (data.grantedBy || "");
+
+      div.append(name, date, reason, uid, giver);
+
+      if (data.status === "revoked") {
+
+        const revoked = document.createElement("div");
+        revoked.textContent = "↩️ 取り消し済み";
+
+        const revokedDate = document.createElement("div");
+        revokedDate.className = "small";
+        revokedDate.textContent = data.revokedAt?.toDate
+          ? "取り消し日時：" + data.revokedAt.toDate().toLocaleString("ja-JP")
+          : "";
+
+        div.append(revoked, revokedDate);
+
+      } else {
+
+        const revokeButton = document.createElement("button");
+        revokeButton.className = "admin-button";
+        revokeButton.textContent = "このスタンプを取り消す";
+
+        revokeButton.addEventListener("click", async () => {
+          await revokeStamp(item.id, data);
+        });
+
+        div.appendChild(revokeButton);
+      }
+
+      list.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+    list.textContent =
+      "付与履歴を読み込めませんでした。\n" + error.message;
+
+  }
+}
+
+
+// ==================================
+// 管理者：スタンプ取り消し
+// ==================================
+
+async function revokeStamp(grantId, grantData) {
+
+  if (!isAdmin()) {
+    alert("管理者のみ操作できます。");
+    return;
+  }
+
+  if (grantData.status !== "active") {
+    alert("このスタンプはすでに取り消されています。");
+    return;
+  }
+
+  const targetName = grantData.targetName || "このメンバー";
+
+  if (!confirm(
+    targetName + "さんに付与したスタンプを取り消す？\n\n" +
+    "この操作をするとスタンプ数が1個減るよ。"
+  )) {
+    return;
+  }
+
+  try {
+
+    const grantRef = doc(db, "stampGrants", grantId);
+    const userRef = doc(db, "users", grantData.targetUID);
+    const historyRef = doc(
+      db,
+      "users",
+      grantData.targetUID,
+      "history",
+      grantData.historyId
+    );
+
+    await runTransaction(db, async (transaction) => {
+
+      // トランザクション内の読み取りを先に行う
+      const grantSnapshot = await transaction.get(grantRef);
+
+      if (!grantSnapshot.exists()) {
+        throw new Error("付与履歴が見つかりません。");
+      }
+
+      if (grantSnapshot.data().status !== "active") {
+        throw new Error("このスタンプはすでに取り消されています。");
+      }
+
+      const userSnapshot = await transaction.get(userRef);
+
+      if (!userSnapshot.exists()) {
+        throw new Error("対象ユーザーが見つかりません。");
+      }
+
+      const historySnapshot = await transaction.get(historyRef);
+
+      if (!historySnapshot.exists()) {
+        throw new Error("本人のスタンプ履歴が見つかりません。");
+      }
+
+      if (historySnapshot.data().status === "revoked") {
+        throw new Error("このスタンプはすでに取り消されています。");
+      }
+
+      const oldCount = userSnapshot.data().stampCount || 0;
+
+      if (oldCount <= 0) {
+        throw new Error("スタンプ数が0個のため取り消せません。");
+      }
+
+      // ユーザーのスタンプ数を1個減らす
+      transaction.update(userRef, {
+        stampCount: oldCount - 1,
+        updatedAt: serverTimestamp()
+      });
+
+      // 全体履歴を取り消し済みにする
+      transaction.update(grantRef, {
+        status: "revoked",
+        revokedAt: serverTimestamp(),
+        revokedBy: currentUser.uid
+      });
+
+      // 本人側の履歴も取り消し済みにする
+      transaction.update(historyRef, {
+        status: "revoked",
+        revokedAt: serverTimestamp(),
+        revokedBy: currentUser.uid
+      });
+
+    });
+
+    alert("スタンプを取り消したよ！");
+    await loadGrantHistory();
+    await loadUsers();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("取り消しに失敗しました。\n" + error.message);
+
+  }
+}
 
 
 // ==================================
@@ -1083,6 +1335,9 @@ async function loadUsers() {
 
 document.getElementById("reloadUsersBtn")
 .addEventListener("click", loadUsers);
+
+document.getElementById("reloadGrantHistoryBtn")
+.addEventListener("click", loadGrantHistory);
 
 
 </script>
